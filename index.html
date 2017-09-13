@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8"/>
+		<meta http-equiv="x-ua-compatible" content="ie=edge"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+		<link rel="stylesheet" href="assets/css/style.css"/>
+		<title>RPS - Multiplayer</title>
+	</head>
+	
+	<body>
+		<div class="container">
+			<div class="gameName">Rock - Paper - Scissors</div>
+			
+			<div class="row">
+				<div class="box col-sm-4">Player 1</div>
+				<div class="box col-sm-4">Game Info</div>
+				<div class="box col-sm-4">Player 2</div>
+			</div>
+			
+			<div class="row justify-content-center">
+				<div class="messageArea col-sm-8 text-center">
+					<textarea class="col-sm-12"></textarea>
+					<div class="form-inline">
+						<input type="text" class="form-control col-sm-10 mr-sm-5" placeholder="New message here">
+						<button type="submit" class="btn btn-primary">Send</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<script src="https://www.gstatic.com/firebasejs/4.3.1/firebase.js"></script>
+		<script>
+		  // Initialize Firebase
+		  var config = {
+			apiKey: "AIzaSyCMlkvlZbv5pElUZg99hZJm0H6CqSKVQWE",
+			authDomain: "rps-multiplayer-6e91f.firebaseapp.com",
+			databaseURL: "https://rps-multiplayer-6e91f.firebaseio.com",
+			projectId: "rps-multiplayer-6e91f",
+			storageBucket: "",
+			messagingSenderId: "879810800461"
+		  };
+		  firebase.initializeApp(config);
+		</script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+		<script src="assets/javascript/app.js"></script>
+	</body>
+</html>

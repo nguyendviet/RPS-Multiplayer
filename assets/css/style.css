@@ -1,0 +1,19 @@
+textarea {
+	resize: none;
+	height: 200px;
+}
+
+.gameName {
+	background-color: aqua;
+}
+
+.box {
+	margin: 10px 0;
+	border: 2px solid gray;
+	height: 200px;
+	text-align: center;
+}
+
+.newMessage {
+	width: 100%;
+}
