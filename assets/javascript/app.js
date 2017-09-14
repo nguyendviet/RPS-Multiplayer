@@ -37,47 +37,27 @@ function writeUserData(userId, name, win, loss) {
 function createNewUser() {
 	var newUser = $('#newUser').val().trim();
 
-	
-
 	if (newUser) {
 		console.log(newUser);
 
 		/*show the line below when figure out how to allow 2 browsers log in*/
 		/*$('.userLogIn').html('<p>Hi ' + newUser + '! You\'re player ' + userId + '</p>');*/
 		
-		
-
 		writeUserData(userId, newUser, 0, 0);
 		userId++; /*need to update userId based on firebase data, otherwise the other browser will reset user1 data*/
 	}
 	else {
 		return;
 	}
-
-
 }
 
-/*count user*/
-var countUser = firebase.database().ref('users/' + userId);
+/*count user?*/
 
-firebase.database().ref('/users/' + userId).once('value').then(function() {
-			console.log('number of users: ', userId);
-});
 
 /*add user when click start*/
 $('#startButton').on('click', function() {
 	createNewUser();
-
-	
 });
-
-
-
-
-
-
-
-
 
 /*==========================================================================================users send messages*/
 function sendMessage() {
