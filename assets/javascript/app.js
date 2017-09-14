@@ -9,50 +9,65 @@ var config = {
 };
 firebase.initializeApp(config);
 
-function userLogIn() {
+/*==========================================================================================*/
+/*NOTICE: keep everything organised by tasks for now, when done, organise things by categories*/
+/*==========================================================================================*/
+
+
+function getReady() {
+	/*print name box and start button*/
 	$('.userLogIn').html('<div class="form-inline"><input id="newUser" type="text" class="form-control col-sm-9 mr-sm-2" placeholder="Type your name here"><button id = "startButton" type="submit" class="btn btn-success">Start</button></div>');
 }
 
-userLogIn();
+getReady();
 
-/*submit players*/
+/*==========================================================================================users log in*/
+var userId = 1;
+
+/*send user data to firebase*/
 function writeUserData(userId, name, win, loss) {
-  firebase.database().ref('users/' + userId).set({
-    name: name,
-    wins: win,
-    losses: loss
-  });
+	firebase.database().ref('users/' + userId).set({
+		name: name,
+		wins: win,
+		losses: loss
+	});
 }
 
-$('#startButton').on('click', function() {
-	console.log('click');
-
+/*create new user*/
+function createNewUser() {
 	var newUser = $('#newUser').val().trim();
+
 
 	if (newUser) {
 		console.log(newUser);
-		writeUserData(1, newUser, 0, 0);
+		$('.userLogIn').html('<p>Hi ' + newUser + '! You\'re player ' + userId + '</p>');
+		writeUserData(userId, newUser, 0, 0);
+		userId++;
 	}
 	else {
 		return;
 	}
 
-	
+
+}
+
+/*add user when click start*/
+$('#startButton').on('click', function() {
+	createNewUser();
 });
 
-
-/*users send messages*/
+/*==========================================================================================users send messages*/
 function sendMessage() {
 	var message = $('#newMessage').val();
-	firebase.database().ref('messages').push(message);
+	firebase.database().ref('chat').push(message);
+	/*push will create a random id for each message, need to remove that to pull messages back*/
 
 	console.log(message);
 }
 
 $('#sendButton').on('click', sendMessage);
 
-	//print input and submit player name button
-
+/*TO DO LIST:*/
 	//print 2 box for 2 players
 	//print middle box
 	//players are objects: contain RPS, win, lose
@@ -71,37 +86,3 @@ $('#sendButton').on('click', sendMessage);
 	//chat box:
 	//board shows all messages sent
 	//bar type new message and send button
-
-/*//firebase message
-const messaging = firebase.messaging();
-
-messaging.requestPermission()
-.then(function() {
-    console.log('have permission');
-    return messaging.getToken();
-})
-.then(function(token) {
-    console.log(token);
-})
-.catch(function(err) {
-    console.log('Error occured');
-});
-
-messaging.getToken()
-.then(function(currentToken) {
-	if (currentToken) {
-	  sendTokenToServer(currentToken);
-	  updateUIForPushEnabled(currentToken);
-	} else {
-	  // Show permission request.
-	  console.log('No Instance ID token available. Request permission to generate one.');
-	  // Show permission UI.
-	  updateUIForPushPermissionRequired();
-	  setTokenSentToServer(false);
-	}
-})
-.catch(function(err) {
-	console.log('An error occurred while retrieving token. ', err);
-	showToken('Error retrieving Instance ID token. ', err);
-	setTokenSentToServer(false);
-});*/
