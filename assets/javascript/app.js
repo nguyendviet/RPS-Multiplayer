@@ -1,4 +1,4 @@
-// Initialize Firebase
+/*Initialize Firebase*/
 var config = {
 	apiKey: "AIzaSyCMlkvlZbv5pElUZg99hZJm0H6CqSKVQWE",
 	authDomain: "rps-multiplayer-6e91f.firebaseapp.com",
@@ -37,12 +37,18 @@ function writeUserData(userId, name, win, loss) {
 function createNewUser() {
 	var newUser = $('#newUser').val().trim();
 
+	
 
 	if (newUser) {
 		console.log(newUser);
-		$('.userLogIn').html('<p>Hi ' + newUser + '! You\'re player ' + userId + '</p>');
+
+		/*show the line below when figure out how to allow 2 browsers log in*/
+		/*$('.userLogIn').html('<p>Hi ' + newUser + '! You\'re player ' + userId + '</p>');*/
+		
+		
+
 		writeUserData(userId, newUser, 0, 0);
-		userId++;
+		userId++; /*need to update userId based on firebase data, otherwise the other browser will reset user1 data*/
 	}
 	else {
 		return;
@@ -51,10 +57,27 @@ function createNewUser() {
 
 }
 
+/*count user*/
+var countUser = firebase.database().ref('users/' + userId);
+
+firebase.database().ref('/users/' + userId).once('value').then(function() {
+			console.log('number of users: ', userId);
+});
+
 /*add user when click start*/
 $('#startButton').on('click', function() {
 	createNewUser();
+
+	
 });
+
+
+
+
+
+
+
+
 
 /*==========================================================================================users send messages*/
 function sendMessage() {
@@ -68,9 +91,6 @@ function sendMessage() {
 $('#sendButton').on('click', sendMessage);
 
 /*TO DO LIST:*/
-	//print 2 box for 2 players
-	//print middle box
-	//players are objects: contain RPS, win, lose
 
 	//1st user enters name becomes 1st player
 	//2nd user enters becomes 2nd player (firebase?)
