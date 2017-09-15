@@ -4,12 +4,17 @@ textarea {
 }
 
 .gameName {
+	height: 100%;
 	background-color: aqua;
 	margin-bottom: 20px;
 }
 
+.userBoard {
+	height: 80px;
+}
+
 .box {
-	margin: 10px 0;
+	margin: 10px;
 	border: 2px solid gray;
 	height: 200px;
 	text-align: center;
