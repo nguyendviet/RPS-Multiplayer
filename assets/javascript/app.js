@@ -31,6 +31,21 @@ getReady();
 var user1 = false;
 var user2 = false;
 
+function checkUser1() {
+	var x = firebase.database().ref('users/' + 1);
+
+	x.once('value').then(function(snapshot) {
+		user1 = true;
+	});
+}
+
+function checkUser2() {
+	var y = firebase.database().ref('users/' + 2);
+		y.once('value').then(function(snapshot) {
+			user2 = true;
+	});
+}
+
 function writeUserData(name, win, loss) {
 	if (!user1 && !user2) {
 		firebase.database().ref('users/' + 1).set({
@@ -38,7 +53,8 @@ function writeUserData(name, win, loss) {
 			wins: win,
 			losses: loss
 		});
-		user1 = true;
+
+		checkUser1();
 		console.log('user 1: ', name);
 	}
 	else if (user1 && !user2) {
@@ -47,7 +63,8 @@ function writeUserData(name, win, loss) {
 			wins: win,
 			losses: loss
 		});
-		user2 = true;
+
+		checkUser2();
 		console.log('user 2: ', name);
 	}
 	else {
@@ -70,6 +87,8 @@ function noticeUser() {
 	var userNotice = 'Wait for your turn';
 	$('.userLogIn').html('<p>Hi ' + newUser + '! You\'re player ' + userId + '</p>' + '<p>' + userNotice + '</p>');
 }
+
+
 
 /*create new user*/
 function createNewUser() {
