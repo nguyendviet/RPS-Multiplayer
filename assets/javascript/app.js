@@ -31,6 +31,20 @@ getReady();
 var user1 = false;
 var user2 = false;
 
+
+/*==================TEST AREA BEGINS==================*/
+
+
+//can get database value with this:
+var ref = firebase.database().ref('users');
+ref.on('value', gotData);
+
+function gotData(data) {
+	console.log(data.val());
+}
+
+/*==================TEST AREA ENDS==================*/
+
 function checkUser1() {
 	var x = firebase.database().ref('users/' + 1);
 
