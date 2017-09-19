@@ -19,6 +19,9 @@
 	height: 200px;
 	border: 1px solid black;
 	overflow-y: scroll;
+	text-align: left;
+	line-height: 3px;
+	padding: 10px 5px;
 }
 
 .newMessage {

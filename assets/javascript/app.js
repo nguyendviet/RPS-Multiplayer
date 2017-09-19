@@ -9,11 +9,14 @@ var config = {
 };
 firebase.initializeApp(config);
 
-var ref = firebase.database().ref('users');
-var chat = firebase.database().ref('chat');
+var database = firebase.database();
+var userRef = database.ref('users');
+var chatRef = database.ref('chat');
 var currentUser = 0;
 
-//prepare game
+//================================================ FUNCTIONS ================================================
+
+/*prepare game*/
 function getReady() {
 	/*print name box and start button*/
 	$('.userLogIn').html('<div class="form-inline"><input id="newUser" type="text" class="form-control col-sm-9 mr-sm-2" placeholder="Type your name here"><button id="startButton" type="submit" class="btn btn-success">Start</button></div>');
@@ -22,15 +25,15 @@ function getReady() {
 }
 
 function checkCurrentUser() {
-	if (ref !== null) {
-		ref.once('value').then(function(snapshot) {
+	if (userRef !== null) {
+		userRef.once('value').then(function(snapshot) {
 			currentUser = snapshot.numChildren();
 			console.log('no of user: ', currentUser);
 		});
 	}
 }
 
-getReady();
+
 
 function writeUserData(name, win, loss) {
 
@@ -71,19 +74,23 @@ function createNewUser() {
 	}
 }
 
-$('#startButton').on('click', function() {
-	createNewUser();
-});
-
-/*==========================================================================================users send messages*/
+/*send message*/
 function sendMessage() {
 	var message = $('#newMessage').val();
-	chat.push(message);
+	chatRef.push(message);
 }
 
-chat.on('child_added', function(snapshot) {
+chatRef.on('child_added', function(snapshot) {
 	var currentMessage = snapshot.val();
 	$('.messageHolder').append('<p>' + currentMessage + '</p>');
+});
+
+//================================================ OPERATIONS ================================================
+
+getReady();
+
+$('#startButton').on('click', function() {
+	createNewUser();
 });
 
 $('#sendButton').on('click', sendMessage);
