@@ -4,13 +4,12 @@ var config = {
 	authDomain: "rps-multiplayer-6e91f.firebaseapp.com",
 	databaseURL: "https://rps-multiplayer-6e91f.firebaseio.com",
 	projectId: "rps-multiplayer-6e91f",
-	storageBucket: "rps-multiplayer-6e91f.appspot.com",
+	storageBucket: "",
 	messagingSenderId: "879810800461"
 };
 firebase.initializeApp(config);
 
 var ref = firebase.database().ref('users');
-var chat = firebase.database().ref('chat');
 var currentUser = 0;
 
 //prepare game
@@ -35,7 +34,6 @@ getReady();
 function writeUserData(name, win, loss) {
 
 	if (currentUser === 0) {
-		console.log('setting user 1', name);
 		firebase.database().ref('users/' + 1).set({
 			name: name,
 			wins: win,
@@ -43,7 +41,6 @@ function writeUserData(name, win, loss) {
 		});
 	}
 	else if (currentUser === 1) {
-		console.log('setting user 2', name);
 		firebase.database().ref('users/' + 2).set({
 			name: name,
 			wins: win,
@@ -74,16 +71,3 @@ function createNewUser() {
 $('#startButton').on('click', function() {
 	createNewUser();
 });
-
-/*==========================================================================================users send messages*/
-function sendMessage() {
-	var message = $('#newMessage').val();
-	chat.push(message);
-}
-
-chat.on('child_added', function(snapshot) {
-	var currentMessage = snapshot.val();
-	$('.messageHolder').append(currentMessage);
-});
-
-$('#sendButton').on('click', sendMessage);
