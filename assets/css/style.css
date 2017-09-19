@@ -1,8 +1,3 @@
-textarea {
-	resize: none;
-	height: 200px;
-}
-
 .gameName {
 	height: 100%;
 	background-color: aqua;
@@ -18,6 +13,12 @@ textarea {
 	border: 2px solid gray;
 	height: 200px;
 	text-align: center;
+}
+
+.messageHolder {
+	height: 200px;
+	border: 1px solid black;
+	overflow-y: scroll;
 }
 
 .newMessage {

@@ -83,7 +83,7 @@ function sendMessage() {
 
 chat.on('child_added', function(snapshot) {
 	var currentMessage = snapshot.val();
-	$('.messageHolder').append(currentMessage);
+	$('.messageHolder').append('<p>' + currentMessage + '</p>');
 });
 
 $('#sendButton').on('click', sendMessage);
