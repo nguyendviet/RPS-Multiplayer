@@ -9,70 +9,57 @@ var config = {
 };
 firebase.initializeApp(config);
 
+//================================================ GLOBAL VARS ================================================
+
 var database = firebase.database();
-var userRef = database.ref('users');
-var chatRef = database.ref('chat');
-var currentUser = 0;
+var userRef = database.ref("/users");
+var connectedRef = database.ref(".info/connected");
+var chatRef = database.ref("/chat");
+var currentUsers;
 
 //================================================ FUNCTIONS ================================================
 
 /*prepare game*/
 function getReady() {
 	/*print name box and start button*/
-	$('.userLogIn').html('<div class="form-inline"><input id="newUser" type="text" class="form-control col-sm-9 mr-sm-2" placeholder="Type your name here"><button id="startButton" type="submit" class="btn btn-success">Start</button></div>');
-
-	checkCurrentUser();
+	$('.userInfo').html('<div class="form-inline"><input id="newUser" type="text" class="form-control col-sm-9 mr-sm-2" placeholder="Type your name here"><button id="startButton" type="submit" class="btn btn-success">Start</button></div>');
 }
 
-function checkCurrentUser() {
-	if (userRef !== null) {
-		userRef.once('value').then(function(snapshot) {
-			currentUser = snapshot.numChildren();
-			console.log('no of user: ', currentUser);
-		});
-	}
-}
+//work begins
 
+userRef.on("value", function(snapshot) {
+	currentUsers = snapshot.numChildren();
 
+  	console.log('number of users: ', snapshot.numChildren());
+});
 
-function writeUserData(name, win, loss) {
-
-	if (currentUser === 0) {
-		console.log('setting user 1', name);
-		firebase.database().ref('users/' + 1).set({
-			name: name,
-			wins: win,
-			losses: loss
-		});
-	}
-	else if (currentUser === 1) {
-		console.log('setting user 2', name);
-		firebase.database().ref('users/' + 2).set({
-			name: name,
-			wins: win,
-			losses: loss
-		});
-	}
-	else if (currentUser >= 2) {
-		console.log('maximum no of users');
-		return;
-	}
-}
+userRef.on('child_added', function(snapshot) {
+	$('')
+});
 
 /*create new user*/
 function createNewUser() {
 	var newUser = $('#newUser').val().trim();
 
 	if (newUser) {
-		writeUserData(newUser, 0, 0);
-		checkCurrentUser();
+		var con = userRef.push({
+			name: newUser,
+			win: 0,
+			loss: 0
+		});
+		con.onDisconnect().remove(); /*cannot use onDisconnect with set*/
 
-		console.log('new user name: ', newUser);
+		$('.userInfo').html('<p>Hi ' + newUser + '</p>');
+
+		console.log('new user key: ', con.key);
+		console.log('new user is: ', newUser);
 	}
 	else {
 		return;
 	}
 }
+
+//work ends
 
 /*send message*/
 function sendMessage() {
@@ -89,8 +76,5 @@ chatRef.on('child_added', function(snapshot) {
 
 getReady();
 
-$('#startButton').on('click', function() {
-	createNewUser();
-});
-
+$('#startButton').on('click', createNewUser);
 $('#sendButton').on('click', sendMessage);
