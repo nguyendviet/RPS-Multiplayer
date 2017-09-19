@@ -13,7 +13,6 @@ firebase.initializeApp(config);
 
 var database = firebase.database();
 var userRef = database.ref("/users");
-var connectedRef = database.ref(".info/connected");
 var chatRef = database.ref("/chat");
 var currentUsers;
 
@@ -29,12 +28,8 @@ function getReady() {
 
 userRef.on("value", function(snapshot) {
 	currentUsers = snapshot.numChildren();
-
-  	console.log('number of users: ', snapshot.numChildren());
-});
-
-userRef.on('child_added', function(snapshot) {
-	$('')
+	
+  	console.log('number of users: ', currentUsers);
 });
 
 /*create new user*/
@@ -47,12 +42,12 @@ function createNewUser() {
 			win: 0,
 			loss: 0
 		});
-		con.onDisconnect().remove(); /*cannot use onDisconnect with set*/
+		con.onDisconnect().remove();
 
 		$('.userInfo').html('<p>Hi ' + newUser + '</p>');
+		$('.notification').html('You are Player ' + currentUsers);
 
 		console.log('new user key: ', con.key);
-		console.log('new user is: ', newUser);
 	}
 	else {
 		return;
