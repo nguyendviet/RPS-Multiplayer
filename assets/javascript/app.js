@@ -18,45 +18,52 @@ var user2Ref = database.ref('users/2/');
 var turnRef = database.ref('turn/');
 var chatRef = database.ref("/chat");
 var existingUsers;
-var localUser = {id: '', name: ''};
+var localUser = {id: [], name: ''};
 
 //================================================ FUNCTIONS ================================================
 
 /*prepare game*/
 function getReady() {
-	var rockPNG = '<img title="Rock" src="assets/images/rock.png"/>';
-	var paperPNG = '<img title="Paper" src="assets/images/paper.png"/>';
-	var scissorsPNG = '<img title="Scissors" src="assets/images/scissors.png"/>';
-
-	for (var i = 1; i < 3; i++) {
-		$('.rock' + i).html(rockPNG);
-		$('.paper' + i).html(paperPNG);
-		$('.scissors' + i).html(scissorsPNG);
-	}
-
 	/*print name box and start button*/
 	$('.userInfo').html('<div class="form-inline"><input id="newUser" type="text" class="form-control col-sm-9 mr-sm-2" placeholder="Type your name here"><button id="startButton" type="submit" class="btn btn-success">Start</button></div>');
 }
 
-//CONSTRUCTION BEGINS<===========================================================================
 
+
+/*show user name, win, loos to both users, exclude RPS*/
 function printUserInfo(id, name, win, loss) {
 	$('.userName' + id).html('<h3>' + name + '</h3>');
-	$('.userRPS' + id).css('display', 'block'); //hide other user's RPS???
 	$('.userScore' + id).html('Wins: ' + win + ' Losses: ' + loss);
 }
 
-//print only local RPS
-function printLocalRPS() {
+/*insert photos for RPS*/
+function setRPS(id) {
+	var rockPNG = '<img title="Rock" src="assets/images/rock.png"/>';
+	var paperPNG = '<img title="Paper" src="assets/images/paper.png"/>';
+	var scissorsPNG = '<img title="Scissors" src="assets/images/scissors.png"/>';
 
+	$('.rock' + id).html(rockPNG);
+	$('.paper' + id).html(paperPNG);
+	$('.scissors' + id).html(scissorsPNG);
 }
+
+//CONSTRUCTION BEGINS<===========================================================================
+
+/*show user's own RPS*/
+function printRPS() {
+	if (localUser.id === 1) {
+		setRPS(1);
+	}
+	else if (localUser.id === 2) {
+		setRPS(2);
+	}
+} //issue: if user left, the other doesn't see RPS
 
 /*create new user*/
 function createNewUser() {
 	var newUser = $('#newUser').val().trim();
 
 	if (newUser) {
-
 		if (existingUsers === 0) {
 			user1Ref.set({
 				name: newUser,
@@ -71,6 +78,8 @@ function createNewUser() {
 
 			localUser.id = 1;
 			localUser.name = newUser;
+
+			printRPS();
 		}
 		else if (existingUsers === 1) {
 			user2Ref.set({
@@ -85,6 +94,8 @@ function createNewUser() {
 
 			localUser.id = 2;
 			localUser.name = newUser;
+
+			printRPS();
 		}
 		else if (existingUsers >= 2) {
 			$('.userInfo').html('<p>Hi ' + newUser + '</p>');
@@ -118,15 +129,6 @@ userRef.on("value", function(snapshot) {
 	}
 });
 
-//change user box colour when turn changes
-turnRef.on('value', function(snapshot) {
-	var turn = snapshot.val();
-
-	if (turn == 1) {
-		$('.user1').css('border', '3px solid red');
-	}
-});
-
 /*remove player's info if disconnected*/
 userRef.on('child_removed', function(snapshot) {
 	chatRef.remove();
@@ -137,6 +139,15 @@ userRef.on('child_removed', function(snapshot) {
 		$('.userName' + i).html('Waiting for Player ' + i);
 		$('.userRPS' + i).html('');
 		$('.userScore' + i).html('');
+	}
+});
+
+//change user box colour when turn changes
+turnRef.on('value', function(snapshot) {
+	var turn = snapshot.val();
+
+	if (turn == 1) {
+		$('.user1').css('border', '3px solid red');
 	}
 });
 
@@ -152,8 +163,6 @@ function chosenTool() {
 	}
 }
 
-//enable tools
-//only you can see your tools
 //turn++ after each round
 //when 1 user left, remove turn
 
