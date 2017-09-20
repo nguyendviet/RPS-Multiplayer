@@ -14,46 +14,37 @@ firebase.initializeApp(config);
 var database = firebase.database();
 var userRef = database.ref("/users");
 var user1Ref = database.ref('users/1/');
-var user2Ref = database.ref('users/2/')
+var user2Ref = database.ref('users/2/');
+var turnRef = database.ref('turn/');
 var chatRef = database.ref("/chat");
 var existingUsers;
-var localUser = {name: '', colour: ''};
+var localUser = {id: '', name: '', colour: ''};
 
 //================================================ FUNCTIONS ================================================
 
 /*prepare game*/
 function getReady() {
+	var rockPNG = '<img title="Rock" src="assets/images/rock.png"/>';
+	var paperPNG = '<img title="Paper" src="assets/images/paper.png"/>';
+	var scissorsPNG = '<img title="Scissors" src="assets/images/scissors.png"/>';
+
+	for (var i = 1; i < 3; i++) {
+		$('.rock' + i).html(rockPNG);
+		$('.paper' + i).html(paperPNG);
+		$('.scissors' + i).html(scissorsPNG);
+	}
+
 	/*print name box and start button*/
 	$('.userInfo').html('<div class="form-inline"><input id="newUser" type="text" class="form-control col-sm-9 mr-sm-2" placeholder="Type your name here"><button id="startButton" type="submit" class="btn btn-success">Start</button></div>');
-
-	/*print div for user's data*/
-	for (var i = 1; i < 3; i++) {
-		$('.user' + i).html('<div class="userName userName' + i + '">Waiting for Player ' + i + '</div><div class="userRPS' + i + '"></div><div class="userScore' + i + '"></div>');
-	}
 }
 
 //CONSTRUCTION BEGINS<===========================================================================
 
 function printUserInfo(id, name, win, loss) {
-	var rockPNG = '<img title="Rock" src="assets/images/rock.png"/>';
-	var paperPNG = '<img title="Paper" src="assets/images/paper.png"/>';
-	var scissorsPNG = '<img title="Scissors" src="assets/images/scissors.png"/>';
 	$('.userName' + id).html('<h3>' + name + '</h3>');
-	$('.userRPS' + id).html('<div class="tool" data-tool="rock">' + rockPNG + '</div><div class="tool" data-tool="paper">' + paperPNG + '</div><div class="tool" data-tool="scissors">' + scissorsPNG + '</div>');
+	$('.userRPS' + id).css('display', 'block'); //hide other user's RPS???
 	$('.userScore' + id).html('Wins: ' + win + ' Losses: ' + loss);
 }
-
-//why on click doesn't capture anything???
-$('.user1').on('click', function() {
-	console.log('click on user1 div'); //this works
-});
-
-$('.tool').on('click', function() {
-	console.log('click on tool'); //this doesn't work
-});
-
-//looks like div created from the function printUserInfo can't be recognised
-
 
 /*create new user*/
 function createNewUser() {
@@ -73,6 +64,7 @@ function createNewUser() {
 
 			user1Ref.onDisconnect().remove(); /*issue: if player 1 disconnects, then a 3rd player log-ins, 3rd player will replace existing player 2*/
 
+			localUser.id = 1;
 			localUser.name = newUser;
 			localUser.colour = 'green';
 		}
@@ -87,6 +79,7 @@ function createNewUser() {
 			
 			user2Ref.onDisconnect().remove();
 
+			localUser.id = 2;
 			localUser.name = newUser;
 			localUser.colour = 'blue';
 		}
@@ -101,6 +94,14 @@ function createNewUser() {
 }
 
 userRef.on("value", function(snapshot) {
+	var turn = 1;
+
+	/*start 1st turn when 2 users in*/
+	if (snapshot.numChildren() == 2) {
+		turnRef.set(turn);
+	}
+	//set user 1 turn?
+
 	/*check no of existing users*/
 	existingUsers = snapshot.numChildren();
 	
@@ -119,6 +120,7 @@ userRef.on("value", function(snapshot) {
 /*remove player's info if disconnected*/
 userRef.on('child_removed', function(snapshot) {
 	chatRef.remove();
+	turnRef.remove();
 	
 	for (var i = 1; i < 3; i++) {
 		printUserInfo(i, '', '', '');
@@ -127,6 +129,23 @@ userRef.on('child_removed', function(snapshot) {
 		$('.userScore' + i).html('');
 	}
 });
+
+function chosenTool() {
+	var chosenTool = $(this).data().tool;
+
+	if (localUser.id == 1) {
+		database.ref('users/1/choice').set(chosenTool);
+	}
+
+	if (localUser.id == 2) {
+		database.ref('users/2/choice').set(chosenTool);
+	}
+}
+
+//enable tools
+//only you can see your tools
+//turn++ after each round
+//when 1 user left, remove turn
 
 //CONSTRUCTION ENDS<===========================================================================
 
@@ -160,7 +179,9 @@ chatRef.on('child_removed', function() {
 
 //================================================ OPERATIONS ================================================
 
-getReady();
+$('.tool').on('click', chosenTool); /*must place before getReady()*/
+
+getReady(); /*if place before onclick tool, the localUser's tools aren't shown, only shown on the other user's screen. weird*/
 
 $('#startButton').on('click', createNewUser);
 $('#sendButton').on('click', sendMessage);

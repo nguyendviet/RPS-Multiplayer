@@ -33,6 +33,10 @@
 	color: blue;
 }
 
+.userRPS1, .userRPS2 {
+	display: none;
+}
+
 .tool img {
 	width: 50px;
 }
