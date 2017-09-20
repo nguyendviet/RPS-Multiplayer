@@ -11,7 +11,7 @@
 .box {
 	margin: 10px;
 	border: 3px solid #cccccc;
-	height: 200px;
+	height: 220px;
 	text-align: center;
 }
 
@@ -31,4 +31,14 @@
 
 .blue {
 	color: blue;
+}
+
+.tool img {
+	width: 50px;
+}
+
+.tool:hover {
+	cursor: pointer;
+	border-left: 3px solid aqua;
+	border-right: 3px solid aqua;
 }

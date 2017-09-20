@@ -52,8 +52,6 @@ $('.tool').on('click', function() {
 	console.log('click on tool'); //this doesn't work
 });
 
-//looks like div created from the function printUserInfo can't be recognised
-
 
 /*create new user*/
 function createNewUser() {
