@@ -46,6 +46,11 @@ function printUserInfo(id, name, win, loss) {
 	$('.userScore' + id).html('Wins: ' + win + ' Losses: ' + loss);
 }
 
+//print only local RPS
+function printLocalRPS() {
+
+}
+
 /*create new user*/
 function createNewUser() {
 	var newUser = $('#newUser').val().trim();
@@ -62,7 +67,7 @@ function createNewUser() {
 			$('.userInfo').html('<p>Hi ' + newUser + '</p>');
 			$('.notification').html('You are Player 1');
 
-			user1Ref.onDisconnect().remove(); /*issue: if player 1 disconnects, then a 3rd player log-ins, 3rd player will replace existing player 2*/
+			user1Ref.onDisconnect().remove(); //issue: if player 1 disconnects, then a 3rd player log-ins, 3rd player will replace existing player 2
 
 			localUser.id = 1;
 			localUser.name = newUser;
@@ -92,13 +97,11 @@ function createNewUser() {
 }
 
 userRef.on("value", function(snapshot) {
-	var turn = 1;
 
 	/*start 1st turn when 2 users in*/
 	if (snapshot.numChildren() == 2) {
-		turnRef.set(turn);
+		turnRef.set(1);
 	}
-	//set user 1 turn?
 
 	/*check no of existing users*/
 	existingUsers = snapshot.numChildren();
@@ -112,6 +115,15 @@ userRef.on("value", function(snapshot) {
 
 			printUserInfo(i, name, win, loss);
 		}
+	}
+});
+
+//change user box colour when turn changes
+turnRef.on('value', function(snapshot) {
+	var turn = snapshot.val();
+
+	if (turn == 1) {
+		$('.user1').css('border', '3px solid red');
 	}
 });
 
