@@ -17,7 +17,7 @@ var user1Ref = database.ref('users/1/');
 var user2Ref = database.ref('users/2/')
 var chatRef = database.ref("/chat");
 var existingUsers;
-var localUser = [];
+var localUser = {name: '', colour: ''};
 
 //================================================ FUNCTIONS ================================================
 
@@ -58,7 +58,8 @@ function createNewUser() {
 
 			user1Ref.onDisconnect().remove(); /*issue: if player 1 disconnects, then a 3rd player log-ins, 3rd player will replace existing player 2*/
 
-			localUser.push(newUser);
+			localUser.name = newUser;
+			localUser.colour = 'green';
 		}
 		else if (existingUsers === 1) {
 			user2Ref.set({
@@ -71,7 +72,8 @@ function createNewUser() {
 			
 			user2Ref.onDisconnect().remove();
 
-			localUser.push(newUser);
+			localUser.name = newUser;
+			localUser.colour = 'blue';
 		}
 		else if (existingUsers >= 2) {
 			$('.userInfo').html('<p>Hi ' + newUser + '</p>');
@@ -122,8 +124,15 @@ user2Ref.on('child_removed', function() {
 /*send message*/
 function sendMessage() {
 	var text = $('#newMessage').val();
-	var message = localUser + ': ' + text;
-	chatRef.push(message);
+	var message = localUser.name + ': ' + text;
+
+	if (localUser.colour === 'green') {
+		chatRef.push('<span class="green">' + message + '</span>');
+	}
+	
+	if (localUser.colour === 'blue') {
+		chatRef.push('<span class="blue">' + message + '</span>');
+	}
 
 	$('#newMessage').val('');
 }
