@@ -18,7 +18,7 @@ var user2Ref = database.ref('users/2/');
 var turnRef = database.ref('turn/');
 var chatRef = database.ref("/chat");
 var existingUsers;
-var localUser = {id: '', name: '', colour: ''};
+var localUser = {id: '', name: ''};
 
 //================================================ FUNCTIONS ================================================
 
@@ -66,7 +66,6 @@ function createNewUser() {
 
 			localUser.id = 1;
 			localUser.name = newUser;
-			localUser.colour = 'green';
 		}
 		else if (existingUsers === 1) {
 			user2Ref.set({
@@ -81,7 +80,6 @@ function createNewUser() {
 
 			localUser.id = 2;
 			localUser.name = newUser;
-			localUser.colour = 'blue';
 		}
 		else if (existingUsers >= 2) {
 			$('.userInfo').html('<p>Hi ' + newUser + '</p>');
@@ -154,11 +152,11 @@ function sendMessage() {
 	var text = $('#newMessage').val();
 	var message = localUser.name + ': ' + text;
 
-	if (localUser.colour === 'green') {
+	if (localUser.id === 1) {
 		chatRef.push('<span class="green">' + message + '</span>');
 	}
 	
-	if (localUser.colour === 'blue') {
+	if (localUser.id === 2) {
 		chatRef.push('<span class="blue">' + message + '</span>');
 	}
 
