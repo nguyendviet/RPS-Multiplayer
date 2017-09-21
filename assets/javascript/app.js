@@ -26,12 +26,10 @@ var user2Choice = '';
 var user1WinName = '';
 var user2WinName = '';
 var localUser = {id: [], name: ''};
-var user1Win = 0;
-var user1Loss = 0;
-var user2Win = 0;
-var user2Loss = 0;
-
+var score1 = 0;
+var score2 = 0;
 var turn = 1;
+
 //================================================ FUNCTIONS ================================================
 
 /*prepare game*/
@@ -66,8 +64,8 @@ function createNewUser() {
 		if ((existingUsers === 0) || ((existingUsers === 1) && (currentUser.hasOwnProperty('2')))) {
 			user1Ref.set({
 				name: newUser,
-				win: user1Win,
-				loss: user1Loss
+				win: 0,
+				loss: 0
 			});
 
 			$('.userInfo').html('<p>Hi ' + newUser + '! You\'re Player 1</p>');
@@ -81,8 +79,8 @@ function createNewUser() {
 		else if ((existingUsers === 1) && (currentUser.hasOwnProperty('1'))) {
 			user2Ref.set({
 				name: newUser,
-				win: user2Win,
-				loss: user2Loss
+				win: 0,
+				loss: 0
 			});
 			$('.userInfo').html('<p>Hi ' + newUser + '! You\'re Player 2</p>');
 
@@ -103,9 +101,8 @@ function createNewUser() {
 }
 
 userRef.on("value", function(snapshot) {
-
 	/*start 1st turn when 2 users in*/
-	if (snapshot.numChildren() == 2) {
+	if (snapshot.numChildren() === 2) {
 		turnRef.set(turn);
 	}
 
@@ -120,27 +117,34 @@ userRef.on("value", function(snapshot) {
 userRef.on('child_removed', function(snapshot) {
 	chatRef.remove();
 	turnRef.remove();
+
+	$('.box').css('border-color', '#cccccc');
+	$('.notification').html('');
 });
+
+//if a user quits:
+//reset existing user's score
+//reset existing user's border colour
 
 turnRef.on('value', function(snapshot) {
 	var t = snapshot.val();
 
 	/*switch colours of user boxes*/
 	if (t === 1) {
-		$('.user1').css('border', '3px solid red');
-		$('.user2').css('border', '3px solid #cccccc');
+		$('.user1').css('border-color', 'red');
+		$('.user2').css('border-color', '#cccccc');
 
 		if (localUser.id === 1) {
 			$('.notification').html('It\'s your turn');
 		}
 		else {
-			$('.notification').html('Waiting for player 1');
+			$('.notification').html('Waiting for player 1'); //if user 1 quits, and logs back in, show 'it's your turn'
 		}
 	}
 
 	if (t === 2) {
-		$('.user2').css('border', '3px solid red');
-		$('.user1').css('border', '3px solid #cccccc');
+		$('.user2').css('border-color', 'red');
+		$('.user1').css('border-color', '#cccccc');
 
 		if (localUser.id === 2) {
 			$('.notification').html('It\'s your turn');
@@ -258,11 +262,10 @@ function compareChoice() {
 		else if (((user1Choice === 'Rock') && (user2Choice === 'Scissors')) || ((user1Choice === 'Paper') && (user2Choice === 'Rock')) || ((user1Choice === 'Scissors') && (user2Choice === 'Paper'))) {
 			$('.gameInfo').html('<h1>' + user1WinName + ' wins!</h1>');
 			
-			user1Win++;
-			user2Loss++;
+			score1++;
 
-			user1Ref.child('win').set(user1Win);
-			user2Ref.child('loss').set(user2Loss);
+			user1Ref.update({win: score1});
+			user2Ref.update({loss: score1});
 
 			turn = 3;
 
@@ -271,11 +274,10 @@ function compareChoice() {
 		else if (((user2Choice === 'Rock') && (user1Choice === 'Scissors')) || ((user2Choice === 'Paper') && (user1Choice === 'Rock')) || ((user2Choice === 'Scissors') && (user1Choice === 'Paper'))) {
 			$('.gameInfo').html('<h1>' + user2WinName + ' wins!</h1>');
 
-			user2Win++;
-			user1Loss++;
+			score2++;
 
-			user2Ref.child('win').set(user2Win);
-			user1Ref.child('loss').set(user1Loss);
+			user2Ref.update({win: score2});
+			user1Ref.update({loss: score2});
 
 			turn = 3;
 
