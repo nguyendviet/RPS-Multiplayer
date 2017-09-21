@@ -14,15 +14,13 @@ firebase.initializeApp(config);
 var database = firebase.database();
 var userRef = database.ref("/users");
 var user1Ref = database.ref('users/1/');
-var user1ChoiceRef = database.ref('users/1/choice/');
 var user2Ref = database.ref('users/2/');
-var user2ChoiceRef = database.ref('users/2/choice/');
+var myUserRef;
 var turnRef = database.ref('turn/');
 var chatRef = database.ref("/chat");
-
-var existingUsers, currentUser;
-var user1Choice = ''; 
-var user2Choice = '';
+var existingUsers;
+var currentUsers;
+var currentUserNum;
 var localUser = {id: [], name: ''};
 
 //================================================ FUNCTIONS ================================================
@@ -32,6 +30,8 @@ function getReady() {
 	/*print name box and start button*/
 	$('.userInfo').html('<div class="form-inline"><input id="newUser" type="text" class="form-control col-sm-9 mr-sm-2" placeholder="Type your name here"><button id="startButton" type="submit" class="btn btn-success">Start</button></div>');
 }
+
+
 
 /*show user name, win, loos to both users, exclude RPS*/
 function printUserInfo(id, name, win, loss) {
@@ -52,12 +52,24 @@ function setRPS(id) {
 
 //CONSTRUCTION BEGINS<===========================================================================
 
+/*show user's own RPS*/
+function printRPS() {
+	if (localUser.id === 1) {
+		setRPS(1);
+	}
+	else if (localUser.id === 2) {
+		setRPS(2);
+	}
+} //issue: if user left, the other doesn't see RPS
+
 /*create new user*/
 function createNewUser() {
 	var newUser = $('#newUser').val().trim();
+	myUserRef = database.ref('users/' + currentUserNum + '/');
+
 
 	if (newUser) {
-		if ((existingUsers === 0) || ((existingUsers === 1) && (currentUser.hasOwnProperty('2')))) {
+		if (existingUsers === 0) {
 			user1Ref.set({
 				name: newUser,
 				win: 0,
@@ -67,14 +79,14 @@ function createNewUser() {
 			$('.userInfo').html('<p>Hi ' + newUser + '</p>');
 			$('.notification').html('You are Player 1');
 
-			user1Ref.onDisconnect().remove();
+			user1Ref.onDisconnect().remove(); //issue: if player 1 disconnects, then a 3rd player log-ins, 3rd player will replace existing player 2
 
 			localUser.id = 1;
 			localUser.name = newUser;
 
-			setRPS(1);
+			printRPS();
 		}
-		else if ((existingUsers === 1) && (currentUser.hasOwnProperty('1'))) {
+		else if (existingUsers === 1) {
 			user2Ref.set({
 				name: newUser,
 				win: 0,
@@ -88,7 +100,7 @@ function createNewUser() {
 			localUser.id = 2;
 			localUser.name = newUser;
 
-			setRPS(2);
+			printRPS();
 		}
 		else if (existingUsers >= 2) {
 			$('.userInfo').html('<p>Hi ' + newUser + '</p>');
@@ -110,8 +122,17 @@ userRef.on("value", function(snapshot) {
 	/*check no of existing users*/
 	existingUsers = snapshot.numChildren();
 
-	/*check current user id on firebase*/
-	currentUser = snapshot.val();
+	currentUsers = snapshot.val();
+
+	console.log('current users is ', snapshot.val());
+
+	if(currentUsers && currentUsers.hasOwnProperty('1')){
+		currentUserNum = 2;
+	}else{
+		currentUserNum = 1;
+	}
+
+	console.log('this user should be #', currentUserNum);
 	
 	/*print user's info*/
 	for (var i = 1; i < 3; i++) {
@@ -129,6 +150,13 @@ userRef.on("value", function(snapshot) {
 userRef.on('child_removed', function(snapshot) {
 	chatRef.remove();
 	turnRef.remove();
+	
+	for (var i = 1; i < 3; i++) {
+		printUserInfo(i, '', '', '');
+		$('.userName' + i).html('Waiting for Player ' + i);
+		$('.userRPS' + i).html('');
+		$('.userScore' + i).html('');
+	}
 });
 
 //change user box colour when turn changes
@@ -150,46 +178,6 @@ function chosenTool() {
 	if (localUser.id == 2) {
 		database.ref('users/2/choice').set(chosenTool);
 	}
-}
-
-user1ChoiceRef.on('value', function(snapshot) {
-	user1Choice = snapshot.val();
-	console.log('player 1 chose: ', user1Choice);
-	compareChoice();
-});
-
-user2ChoiceRef.on('value', function(snapshot) {
-	user2Choice = snapshot.val();
-	console.log('player 2 chose: ', user2Choice);
-	compareChoice();
-});
-
-function compareChoice() {
-
-	if ((user1Choice !== null) && (user2Choice !== null)) {
-		if (user1Choice === user2Choice) {
-			console.log('tie!');
-			clearChoice();
-		}
-		else if (((user1Choice === 'rock') && (user2Choice === 'scissors')) || ((user1Choice === 'paper') && (user2Choice === 'rock')) || ((user1Choice === 'scissors') && (user2Choice === 'paper'))) {
-			console.log('user 1 wins!');
-			clearChoice();
-		}
-		else if (((user2Choice === 'rock') && (user1Choice === 'scissors')) || ((user2Choice === 'paper') && (user1Choice === 'rock')) || ((user2Choice === 'scissors') && (user1Choice === 'paper'))) {
-			console.log('user 2 wins!');
-			clearChoice();
-		}
-	}
-	else {
-		console.log('waiting for both to choose');
-	}
-}
-
-function clearChoice() {
-	user1ChoiceRef.remove();
-	user2ChoiceRef.remove();
-	user1Choice = '';
-	user2Choice = '';
 }
 
 //turn++ after each round
@@ -227,7 +215,9 @@ chatRef.on('child_removed', function() {
 
 //================================================ OPERATIONS ================================================
 
-$('.tool').on('click', chosenTool);
-getReady();
+$('.tool').on('click', chosenTool); /*must place before getReady()*/
+
+getReady(); /*if place before onclick tool, the localUser's tools aren't shown, only shown on the other user's screen. weird*/
+
 $('#startButton').on('click', createNewUser);
 $('#sendButton').on('click', sendMessage);
