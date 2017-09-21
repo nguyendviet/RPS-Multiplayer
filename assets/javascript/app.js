@@ -33,12 +33,6 @@ function getReady() {
 	$('.userInfo').html('<div class="form-inline"><input id="newUser" type="text" class="form-control col-sm-9 mr-sm-2" placeholder="Type your name here"><button id="startButton" type="submit" class="btn btn-success">Start</button></div>');
 }
 
-/*show user name, win, loos to both users, exclude RPS*/
-function printUserInfo(id, name, win, loss) {
-	$('.userName' + id).html('<h3>' + name + '</h3>');
-	$('.userScore' + id).html('Wins: ' + win + ' Losses: ' + loss);
-}
-
 /*insert photos for RPS*/
 function setRPS(id) {
 	var rockPNG = '<img title="Rock" src="assets/images/rock.png"/>';
@@ -112,17 +106,6 @@ userRef.on("value", function(snapshot) {
 
 	/*check current user id on firebase*/
 	currentUser = snapshot.val();
-	
-	/*print user's info*/
-	for (var i = 1; i < 3; i++) {
-		if (snapshot.child(i).exists()) {
-			var name = snapshot.child(i).val().name;
-			var win = snapshot.child(i).val().win;
-			var loss = snapshot.child(i).val().loss;
-
-			printUserInfo(i, name, win, loss);
-		}
-	}
 });
 
 /*remove player's info if disconnected*/
@@ -140,24 +123,64 @@ turnRef.on('value', function(snapshot) {
 	}
 });
 
+/*print user 1 info when joined*/
+user1Ref.on('value', function(snapshot) {
+	var name = snapshot.child('name').val();
+	var win = snapshot.child('win').val();
+	var loss = snapshot.child('loss').val();
+
+	if (name !== null) {
+		$('.userName1').html('<h3>' + snapshot.child('name').val() + '</h3>');
+		$('.userScore1').html('Wins: ' + win + ' Losses: ' + loss);
+	}
+});
+
+/*print user 2 info when joined*/
+user2Ref.on('value', function(snapshot) {
+	var name = snapshot.child('name').val();
+	var win = snapshot.child('win').val();
+	var loss = snapshot.child('loss').val();
+
+	if (name !== null) {
+		$('.userName2').html('<h3>' + snapshot.child('name').val() + '</h3>');
+		$('.userScore2').html('Wins: ' + win + ' Losses: ' + loss);
+	}
+});
+
+/*clear user 1 info when left*/
+user1Ref.on('child_removed', function(snapshot) {
+	$('.userName1').html('Waiting for Player 1');
+	$('.userScore1').html('');
+});
+
+/*clear user 2 info when left*/
+user2Ref.on('child_removed', function(snapshot) {
+	$('.userName2').html('Waiting for Player 2');
+	$('.userScore2').html('');
+});
+
 function chosenTool() {
 	var chosenTool = $(this).data().tool;
 
 	if (localUser.id == 1) {
 		database.ref('users/1/choice').set(chosenTool);
+		$('.userRPS1').html('<h2>' + chosenTool + '</h2>');
 	}
 
 	if (localUser.id == 2) {
 		database.ref('users/2/choice').set(chosenTool);
+		$('.userRPS2').html('<h2>' + chosenTool + '</h2>');
 	}
 }
 
+/*get choice from user 1*/
 user1ChoiceRef.on('value', function(snapshot) {
 	user1Choice = snapshot.val();
 	console.log('player 1 chose: ', user1Choice);
 	compareChoice();
 });
 
+/*get choice from user 2*/
 user2ChoiceRef.on('value', function(snapshot) {
 	user2Choice = snapshot.val();
 	console.log('player 2 chose: ', user2Choice);
@@ -168,20 +191,20 @@ function compareChoice() {
 
 	if ((user1Choice !== null) && (user2Choice !== null)) {
 		if (user1Choice === user2Choice) {
-			console.log('tie!');
+			$('.gameInfo').html('It\'s a tie!');
+			
 			clearChoice();
 		}
-		else if (((user1Choice === 'rock') && (user2Choice === 'scissors')) || ((user1Choice === 'paper') && (user2Choice === 'rock')) || ((user1Choice === 'scissors') && (user2Choice === 'paper'))) {
-			console.log('user 1 wins!');
+		else if (((user1Choice === 'Rock') && (user2Choice === 'Scissors')) || ((user1Choice === 'Paper') && (user2Choice === 'Rock')) || ((user1Choice === 'Scissors') && (user2Choice === 'Paper'))) {
+			$('.gameInfo').html('Player 1 wins!');
+
 			clearChoice();
 		}
-		else if (((user2Choice === 'rock') && (user1Choice === 'scissors')) || ((user2Choice === 'paper') && (user1Choice === 'rock')) || ((user2Choice === 'scissors') && (user1Choice === 'paper'))) {
-			console.log('user 2 wins!');
+		else if (((user2Choice === 'Rock') && (user1Choice === 'Scissors')) || ((user2Choice === 'Paper') && (user1Choice === 'Rock')) || ((user2Choice === 'Scissors') && (user1Choice === 'Paper'))) {
+			$('.gameInfo').html('Player 2 wins!');
+
 			clearChoice();
 		}
-	}
-	else {
-		console.log('waiting for both to choose');
 	}
 }
 
@@ -193,7 +216,6 @@ function clearChoice() {
 }
 
 //turn++ after each round
-//when 1 user left, remove turn
 
 //CONSTRUCTION ENDS<===========================================================================
 
