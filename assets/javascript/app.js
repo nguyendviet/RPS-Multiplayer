@@ -25,7 +25,7 @@ var user1Choice = '';
 var user2Choice = '';
 var user1WinName = '';
 var user2WinName = '';
-var localUser = {id: [], name: '', turn: 0};
+var localUser = {id: [], name: ''};
 var user1Win = 0;
 var user1Loss = 0;
 var user2Win = 0;
@@ -110,10 +110,6 @@ userRef.on("value", function(snapshot) {
 	/*start 1st turn when 2 users in*/
 	if (snapshot.numChildren() == 2) {
 		turnRef.set(turn);
-
-		if (localUser.id === 1) {
-			localUser.turn = 1;
-		}
 	}
 
 	/*check no of existing users*/
@@ -136,15 +132,33 @@ turnRef.on('value', function(snapshot) {
 	if (t === 1) {
 		$('.user1').css('border', '3px solid red');
 		$('.user2').css('border', '3px solid #cccccc');
+
+		if (localUser.id === 1) {
+			$('.notification').html('It\'s your turn');
+		}
+		else {
+			$('.notification').html('Waiting for player 1');
+		}
 	}
 
 	if (t === 2) {
 		$('.user2').css('border', '3px solid red');
 		$('.user1').css('border', '3px solid #cccccc');
+
+		if (localUser.id === 2) {
+			$('.notification').html('It\'s your turn');
+		}
+		else {
+			$('.notification').html('Waiting for player 2');
+		}
+	}
+
+	if (t === 3) {
+		$('.userRPS1').html('<h1>' + user1Choice + '</h1>');
+		$('.userRPS2').html('<h1>' + user2Choice + '</h1>');
 	}
 });
 
-//show chosen tools when result shown
 //reset turn and RPS options
 
 /*print user 1 info when joined*/
@@ -191,15 +205,23 @@ function chosenTool() {
 	var chosenTool = $(this).data().tool;
 
 	if (localUser.id == 1) {
-		user1ChoiceRef.set(chosenTool);
-
-		localUser.turn = 0;
+		if (existingUsers === 2) {
+			user1ChoiceRef.set(chosenTool);
+			$('.userRPS1').html('<h1>' + chosenTool + '</h1>');
+		}
+		else {
+			return;
+		}
 	}
 
 	if (localUser.id == 2) {
-		user2ChoiceRef.set(chosenTool);
-
-		localUser.turn = 0;
+		if (existingUsers === 2) {
+			user2ChoiceRef.set(chosenTool);
+			$('.userRPS2').html('<h1>' + chosenTool + '</h1>');
+		}
+		else {
+			return;
+		}
 	}
 }
 
@@ -234,9 +256,9 @@ function compareChoice() {
 		if (user1Choice === user2Choice) {
 			$('.gameInfo').html('<h1>It\'s a tie!</h1>');
 
-			turn = 1;
+			turn = 3;
 
-			clearChoice();
+			setTimeout(clearChoice, 1000 * 3);
 		}
 		else if (((user1Choice === 'Rock') && (user2Choice === 'Scissors')) || ((user1Choice === 'Paper') && (user2Choice === 'Rock')) || ((user1Choice === 'Scissors') && (user2Choice === 'Paper'))) {
 			$('.gameInfo').html('<h1>' + user1WinName + ' wins!</h1>');
@@ -247,9 +269,9 @@ function compareChoice() {
 			user1Ref.child('win').set(user1Win);
 			user2Ref.child('loss').set(user2Loss);
 
-			turn = 1;
+			turn = 3;
 
-			clearChoice();
+			setTimeout(clearChoice, 1000 * 3);
 		}
 		else if (((user2Choice === 'Rock') && (user1Choice === 'Scissors')) || ((user2Choice === 'Paper') && (user1Choice === 'Rock')) || ((user2Choice === 'Scissors') && (user1Choice === 'Paper'))) {
 			$('.gameInfo').html('<h1>' + user2WinName + ' wins!</h1>');
@@ -260,9 +282,9 @@ function compareChoice() {
 			user2Ref.child('win').set(user2Win);
 			user1Ref.child('loss').set(user1Loss);
 
-			turn = 1;
+			turn = 3;
 
-			clearChoice();
+			setTimeout(clearChoice, 1000 * 3);
 		}
 	}
 }
@@ -272,6 +294,8 @@ function clearChoice() {
 	user2ChoiceRef.remove();
 	user1Choice = '';
 	user2Choice = '';
+	$('.gameInfo').html('');
+	turn = 1;
 }
 
 /*send message*/
