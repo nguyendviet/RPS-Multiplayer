@@ -125,10 +125,10 @@ userRef.on('child_removed', function(snapshot) {
 	turnRef.remove();
 });
 
-//change user box colour when turn changes <============================ HERE
 turnRef.on('value', function(snapshot) {
 	var t = snapshot.val();
 
+	/*switch colours of user boxes*/
 	if (t === 1) {
 		$('.user1').css('border', '3px solid red');
 		$('.user2').css('border', '3px solid #cccccc');
@@ -154,12 +154,11 @@ turnRef.on('value', function(snapshot) {
 	}
 
 	if (t === 3) {
-		$('.userRPS1').html('<h1>' + user1Choice + '</h1>');
-		$('.userRPS2').html('<h1>' + user2Choice + '</h1>');
+		/*show results and choices*/
+		$('.toolChosen1').html('<h1>' + user1Choice + '</h1>');
+		$('.toolChosen2').html('<h1>' + user2Choice + '</h1>');
 	}
 });
-
-//reset turn and RPS options
 
 /*print user 1 info when joined*/
 user1Ref.on('value', function(snapshot) {
@@ -207,7 +206,10 @@ function chosenTool() {
 	if (localUser.id == 1) {
 		if (existingUsers === 2) {
 			user1ChoiceRef.set(chosenTool);
-			$('.userRPS1').html('<h1>' + chosenTool + '</h1>');
+
+			/*hide options, show chosen tool*/
+			$('.userRPS1').hide();
+			$('.toolChosen1').html('<h1>' + chosenTool + '</h1>');
 		}
 		else {
 			return;
@@ -217,7 +219,10 @@ function chosenTool() {
 	if (localUser.id == 2) {
 		if (existingUsers === 2) {
 			user2ChoiceRef.set(chosenTool);
-			$('.userRPS2').html('<h1>' + chosenTool + '</h1>');
+
+			/*hide options, show chosen tool*/
+			$('.userRPS2').hide();
+			$('.toolChosen2').html('<h1>' + chosenTool + '</h1>');
 		}
 		else {
 			return;
@@ -228,7 +233,6 @@ function chosenTool() {
 /*get choice from user 1*/
 user1ChoiceRef.on('value', function(snapshot) {
 	user1Choice = snapshot.val();
-	console.log('player 1 chose: ', user1Choice);
 
 	if (user1Choice) {
 		turn++;
@@ -240,7 +244,6 @@ user1ChoiceRef.on('value', function(snapshot) {
 /*get choice from user 2*/
 user2ChoiceRef.on('value', function(snapshot) {
 	user2Choice = snapshot.val();
-	console.log('player 2 chose: ', user2Choice);
 
 	if (user2Choice) {
 		turn++;
@@ -258,7 +261,7 @@ function compareChoice() {
 
 			turn = 3;
 
-			setTimeout(clearChoice, 1000 * 3);
+			setTimeout(newRound, 1000 * 3);
 		}
 		else if (((user1Choice === 'Rock') && (user2Choice === 'Scissors')) || ((user1Choice === 'Paper') && (user2Choice === 'Rock')) || ((user1Choice === 'Scissors') && (user2Choice === 'Paper'))) {
 			$('.gameInfo').html('<h1>' + user1WinName + ' wins!</h1>');
@@ -271,7 +274,7 @@ function compareChoice() {
 
 			turn = 3;
 
-			setTimeout(clearChoice, 1000 * 3);
+			setTimeout(newRound, 1000 * 3);
 		}
 		else if (((user2Choice === 'Rock') && (user1Choice === 'Scissors')) || ((user2Choice === 'Paper') && (user1Choice === 'Rock')) || ((user2Choice === 'Scissors') && (user1Choice === 'Paper'))) {
 			$('.gameInfo').html('<h1>' + user2WinName + ' wins!</h1>');
@@ -284,18 +287,36 @@ function compareChoice() {
 
 			turn = 3;
 
-			setTimeout(clearChoice, 1000 * 3);
+			setTimeout(newRound, 1000 * 3);
 		}
 	}
 }
 
-function clearChoice() {
+function newRound() {
+	/*remove data on firsebase*/
 	user1ChoiceRef.remove();
 	user2ChoiceRef.remove();
+
+	/*clear choices*/
 	user1Choice = '';
 	user2Choice = '';
 	$('.gameInfo').html('');
+	
+	/*reset turn and push to firebase*/
 	turn = 1;
+	turnRef.set(turn);
+
+	/*show the right user RPS options again*/
+	if (localUser.id === 1) {
+		$('.userRPS1').show();
+	}
+	else {
+		$('.userRPS2').show();
+	}
+
+	/*clear shown chosen tools*/
+	$('.toolChosen1').html('');
+	$('.toolChosen2').html('');
 }
 
 /*send message*/
