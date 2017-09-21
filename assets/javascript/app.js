@@ -51,8 +51,7 @@ function setRPS() {
 		$('.paper1').html(paperPNG);
 		$('.scissors1').html(scissorsPNG);
 	}
-	
-	if (localUser.id === 2) {
+	else {
 		$('.rock2').html(rockPNG);
 		$('.paper2').html(paperPNG);
 		$('.scissors2').html(scissorsPNG);
@@ -72,13 +71,12 @@ function createNewUser() {
 			});
 
 			$('.userInfo').html('<p>Hi ' + newUser + '! You\'re Player 1</p>');
-
-			user1Ref.onDisconnect().remove();
-
+			
 			localUser.id = 1;
 			localUser.name = newUser;
 
 			setRPS();
+			user1Ref.onDisconnect().remove();
 		}
 		else if ((existingUsers === 1) && (currentUser.hasOwnProperty('1'))) {
 			user2Ref.set({
@@ -88,12 +86,11 @@ function createNewUser() {
 			});
 			$('.userInfo').html('<p>Hi ' + newUser + '! You\'re Player 2</p>');
 
-			user2Ref.onDisconnect().remove();
-
 			localUser.id = 2;
 			localUser.name = newUser;
 
 			setRPS();
+			user2Ref.onDisconnect().remove();
 		}
 		else if (existingUsers >= 2) {
 			$('.userInfo').html('<p>Hi ' + newUser + '</p>');
@@ -203,30 +200,25 @@ user2Ref.on('child_removed', function(snapshot) {
 function chosenTool() {
 	var chosenTool = $(this).data().tool;
 
-	if (localUser.id == 1) {
-		if (existingUsers === 2) {
+	if (existingUsers === 2) {
+		if ((localUser.id === 1) && (turn === 1)) {
 			user1ChoiceRef.set(chosenTool);
 
-			/*hide options, show chosen tool*/
 			$('.userRPS1').hide();
 			$('.toolChosen1').html('<h1>' + chosenTool + '</h1>');
 		}
-		else {
-			return;
-		}
-	}
-
-	if (localUser.id == 2) {
-		if (existingUsers === 2) {
+		else if ((localUser.id === 2) && (turn === 2)) {
 			user2ChoiceRef.set(chosenTool);
 
-			/*hide options, show chosen tool*/
 			$('.userRPS2').hide();
 			$('.toolChosen2').html('<h1>' + chosenTool + '</h1>');
 		}
 		else {
 			return;
 		}
+	}
+	else {
+		return;
 	}
 }
 
