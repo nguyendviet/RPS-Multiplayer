@@ -25,13 +25,8 @@ var user1Choice = '';
 var user2Choice = '';
 var user1WinName = '';
 var user2WinName = '';
-var localUser = {id: [], name: '', turn: 0};
-var user1Win = 0;
-var user1Loss = 0;
-var user2Win = 0;
-var user2Loss = 0;
+var localUser = {id: [], name: ''};
 
-var turn = 1;
 //================================================ FUNCTIONS ================================================
 
 /*prepare game*/
@@ -67,8 +62,8 @@ function createNewUser() {
 		if ((existingUsers === 0) || ((existingUsers === 1) && (currentUser.hasOwnProperty('2')))) {
 			user1Ref.set({
 				name: newUser,
-				win: user1Win,
-				loss: user1Loss
+				win: 0,
+				loss: 0
 			});
 
 			$('.userInfo').html('<p>Hi ' + newUser + '! You\'re Player 1</p>');
@@ -83,8 +78,8 @@ function createNewUser() {
 		else if ((existingUsers === 1) && (currentUser.hasOwnProperty('1'))) {
 			user2Ref.set({
 				name: newUser,
-				win: user2Win,
-				loss: user2Loss
+				win: 0,
+				loss: 0
 			});
 			$('.userInfo').html('<p>Hi ' + newUser + '! You\'re Player 2</p>');
 
@@ -109,11 +104,7 @@ userRef.on("value", function(snapshot) {
 
 	/*start 1st turn when 2 users in*/
 	if (snapshot.numChildren() == 2) {
-		turnRef.set(turn);
-
-		if (localUser.id === 1) {
-			localUser.turn = 1;
-		}
+		turnRef.set(1);
 	}
 
 	/*check no of existing users*/
@@ -131,21 +122,39 @@ userRef.on('child_removed', function(snapshot) {
 
 //change user box colour when turn changes <============================ HERE
 turnRef.on('value', function(snapshot) {
-	var t = snapshot.val();
+	var turn = snapshot.val();
 
-	if (t === 1) {
+	if (turn === 1) {
 		$('.user1').css('border', '3px solid red');
-		$('.user2').css('border', '3px solid #cccccc');
+
+		if (localUser.id === 1) {
+			$('.notification').html('It\'s your turn');
+		}
+
+		//this doesn't show
+		if (localUser.id === 2) {
+			$('.notification').html('Waiting for Player 1');
+		}
 	}
 
-	if (t === 2) {
+	//this doesn't work
+	if (turn === 2) {
 		$('.user2').css('border', '3px solid red');
-		$('.user1').css('border', '3px solid #cccccc');
+
+		if (localUser.id === 1) {
+			$('.notification').html('Waiting for Player 2');
+		}
+
+		if (localUser.id === 2) {
+			$('.notification').html('It\'s your turn');
+		}
 	}
 });
 
+//switch colour of user's box
 //show chosen tools when result shown
 //reset turn and RPS options
+//update win and loss
 
 /*print user 1 info when joined*/
 user1Ref.on('value', function(snapshot) {
@@ -191,15 +200,13 @@ function chosenTool() {
 	var chosenTool = $(this).data().tool;
 
 	if (localUser.id == 1) {
-		user1ChoiceRef.set(chosenTool);
+		database.ref('users/1/choice').set(chosenTool);
 
-		localUser.turn = 0;
+		turnRef.set(2);
 	}
 
 	if (localUser.id == 2) {
-		user2ChoiceRef.set(chosenTool);
-
-		localUser.turn = 0;
+		database.ref('users/2/choice').set(chosenTool);
 	}
 }
 
@@ -207,11 +214,6 @@ function chosenTool() {
 user1ChoiceRef.on('value', function(snapshot) {
 	user1Choice = snapshot.val();
 	console.log('player 1 chose: ', user1Choice);
-
-	if (user1Choice) {
-		turn++;
-	}
-
 	compareChoice();
 });
 
@@ -219,48 +221,24 @@ user1ChoiceRef.on('value', function(snapshot) {
 user2ChoiceRef.on('value', function(snapshot) {
 	user2Choice = snapshot.val();
 	console.log('player 2 chose: ', user2Choice);
-
-	if (user2Choice) {
-		turn++;
-	}
-
 	compareChoice();
 });
 
 function compareChoice() {
 
 	if ((user1Choice !== null) && (user2Choice !== null)) {
-
 		if (user1Choice === user2Choice) {
 			$('.gameInfo').html('<h1>It\'s a tie!</h1>');
-
-			turn = 1;
 
 			clearChoice();
 		}
 		else if (((user1Choice === 'Rock') && (user2Choice === 'Scissors')) || ((user1Choice === 'Paper') && (user2Choice === 'Rock')) || ((user1Choice === 'Scissors') && (user2Choice === 'Paper'))) {
 			$('.gameInfo').html('<h1>' + user1WinName + ' wins!</h1>');
-			
-			user1Win++;
-			user2Loss++;
-
-			user1Ref.child('win').set(user1Win);
-			user2Ref.child('loss').set(user2Loss);
-
-			turn = 1;
 
 			clearChoice();
 		}
 		else if (((user2Choice === 'Rock') && (user1Choice === 'Scissors')) || ((user2Choice === 'Paper') && (user1Choice === 'Rock')) || ((user2Choice === 'Scissors') && (user1Choice === 'Paper'))) {
 			$('.gameInfo').html('<h1>' + user2WinName + ' wins!</h1>');
-
-			user2Win++;
-			user1Loss++;
-
-			user2Ref.child('win').set(user2Win);
-			user1Ref.child('loss').set(user1Loss);
-
-			turn = 1;
 
 			clearChoice();
 		}
