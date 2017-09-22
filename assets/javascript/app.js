@@ -30,9 +30,6 @@ var score1 = 0;
 var score2 = 0;
 var turn = 1;
 
-var user1Quit = false;
-var user2Quit = false;
-
 //================================================ FUNCTIONS ================================================
 
 /*prepare game*/
@@ -148,7 +145,7 @@ turnRef.on('value', function(snapshot) {
 			$('.notification').html('It\'s your turn');
 		}
 		else {
-			$('.notification').html('Waiting for player 1'); //if user 1 quits, and logs back in, show 'it's your turn'
+			$('.notification').html('Waiting for player 1');
 		}
 	}
 
