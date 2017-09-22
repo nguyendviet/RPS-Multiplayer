@@ -320,8 +320,7 @@ function sendMessage() {
 	if (localUser.id === 1) {
 		chatRef.push('<span class="green">' + message + '</span>');
 	}
-	
-	if (localUser.id === 2) {
+	else {
 		chatRef.push('<span class="blue">' + message + '</span>');
 	}
 
