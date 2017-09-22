@@ -56,7 +56,12 @@ function showChoice(id) {
 	$('.paper' + id).html(paperPNG);
 	$('.scissors' + id).html(scissorsPNG);
 	$('.userChoice' + id).show();
-	$('.shapeChosen' + id).html('');
+	/*$('.shapeChosen' + id).html('');*/
+}
+
+function clearOldChoices() {
+	$('.shapeChosen1').html('');
+	$('.shapeChosen2').html('');
 }
 
 function writeUserDatabase(id, name, win, loss) {
@@ -250,7 +255,6 @@ user1ChoiceRef.on('value', function(snapshot) {
 
 	if (user1Choice) {
 		turn++;
-		turnRef.set(turn);
 	}
 
 	compareChoice();
@@ -261,7 +265,6 @@ user2ChoiceRef.on('value', function(snapshot) {
 
 	if (user2Choice) {
 		turn++;
-		turnRef.set(turn);
 	}
 
 	compareChoice();
@@ -315,7 +318,8 @@ function newRound() {
 	$('.gameInfo').html('');
 	
 	/*reset turn and push to firebase*/
-	turnRef.set(1);
+	turn = 1;
+	turnRef.set(turn);
 
 	/*show the right user choices again*/
 	if (localUser.id === 1) {
@@ -324,6 +328,8 @@ function newRound() {
 	else {
 		showChoice(2);
 	}
+
+	clearOldChoices();
 }
 
 /*send message*/
