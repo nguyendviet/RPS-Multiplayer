@@ -46,8 +46,8 @@ function getReady() {
 	loss = 0;
 }
 
-/*insert photos for shapes*/
-function showChoice(id) {
+/*insert photos for RPS*/
+function setRPS(id) {
 	var rockPNG = '<img title="Rock" src="assets/images/rock.png"/>';
 	var paperPNG = '<img title="Paper" src="assets/images/paper.png"/>';
 	var scissorsPNG = '<img title="Scissors" src="assets/images/scissors.png"/>';
@@ -70,7 +70,7 @@ function writeUserDatabase(id, name, win, loss) {
 
 	$('.userInfo').html('<p>Hi ' + name + '! You\'re Player ' + id + '</p>');
 	
-	showChoice(localUser.id);
+	setRPS(localUser.id);
 	localUser.ref.onDisconnect().remove();
 }
 
@@ -205,7 +205,7 @@ user2Ref.on('child_removed', function(snapshot) {
 function showShape(id, shape) {
 	localUser.ref.child('/choice/').set(shape);
 
-	$('.userChoice' + id).hide();
+	$('.userRPS' + id).hide();
 	$('.shapeChosen' + id).html('<h1>' + shape + '</h1>');
 }
 
@@ -302,12 +302,12 @@ function newRound() {
 	turn = 1;
 	turnRef.set(turn);
 
-	/*show the right user choices again*/
+	/*show the right user RPS options again*/
 	if (localUser.id === 1) {
-		$('.userChoice1').show();
+		$('.userRPS1').show();
 	}
 	else {
-		$('.userChoice2').show();
+		$('.userRPS2').show();
 	}
 
 	/*clear shown chosen shapes*/

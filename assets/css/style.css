@@ -15,15 +15,15 @@
 	text-align: center;
 }
 
-.userRPS {
+.userChoice {
 	height: 150px;
 }
 
-.tool img {
+.shape img {
 	width: 50px;
 }
 
-.tool:hover {
+.shape:hover {
 	cursor: pointer;
 	border-left: 3px solid aqua;
 	border-right: 3px solid aqua;
