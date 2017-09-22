@@ -101,7 +101,6 @@ function createNewUser() {
 	}
 }
 
-
 userRef.on("value", function(snapshot) {
 	/*start 1st turn when 2 users in*/
 	if (snapshot.numChildren() === 2) {
@@ -115,6 +114,7 @@ userRef.on("value", function(snapshot) {
 	currentUser = snapshot.val();
 });
 
+//need work
 userRef.on('child_added', function(snapshot) {
 	/*reset score if 3rd user joins*/
 	if (existingUsers >= 1) {
@@ -134,38 +134,43 @@ userRef.on('child_removed', function(snapshot) {
 	$('.notification').html('');
 });
 
+/*switch colours of user boxes*/
+function toggleBorder(a, b) {
+	$('.user' + a).addClass('redBorder');
+	$('.user' + b).removeClass('redBorder');
+}
+
+/*show message to the right user*/
+function toggleTurnMessage(id) {
+	if (localUser.id === id) {
+		$('.notification').html('It\'s your turn.');
+	}
+	else {
+		$('.notification').html('Wait for the other player.');
+	}
+}
+
 turnRef.on('value', function(snapshot) {
 	t = snapshot.val();
 
-	/*switch colours of user boxes*/
-	if (t === 1) {
-		$('.user1').css('border-color', 'red');
-		$('.user2').css('border-color', '#cccccc');
-
-		if (localUser.id === 1) {
-			$('.notification').html('It\'s your turn');
+	/*display message and colour according to turn*/
+	if (t !== null) {
+		
+		if (t === 1) {
+			toggleTurnMessage(1);
+			toggleBorder(1, 2);
 		}
-		else {
-			$('.notification').html('Waiting for player 1'); //if user 1 quits, and logs back in, show 'it's your turn'
+		
+		if (t === 2) {
+			toggleTurnMessage(2);
+			toggleBorder(2, 1);
 		}
-	}
-
-	if (t === 2) {
-		$('.user2').css('border-color', 'red');
-		$('.user1').css('border-color', '#cccccc');
-
-		if (localUser.id === 2) {
-			$('.notification').html('It\'s your turn');
+		
+		if (t === 3) {
+			$('.notification').html('');
+			$('.shapeChosen1').html('<h1>' + user1Choice + '</h1>');
+			$('.shapeChosen2').html('<h1>' + user2Choice + '</h1>');
 		}
-		else {
-			$('.notification').html('Waiting for player 2');
-		}
-	}
-
-	if (t === 3) {
-		/*show results and choices*/
-		$('.shapeChosen1').html('<h1>' + user1Choice + '</h1>');
-		$('.shapeChosen2').html('<h1>' + user2Choice + '</h1>');
 	}
 });
 
@@ -210,9 +215,11 @@ user2Ref.on('child_removed', function(snapshot) {
 });
 
 function showShape(id, shape) {
+	/*write choice on firebase*/
 	localUser.choiceRef = localUser.ref.child('/choice/');
 	localUser.choiceRef.set(shape);
 
+	/*show choice on user's screen*/
 	$('.userChoice' + id).hide();
 	$('.shapeChosen' + id).html('<h1>' + shape + '</h1>');
 }
@@ -248,7 +255,7 @@ function pickShape() {
 	compareChoice();
 });*/
 
-
+//need work
 user1ChoiceRef.on('value', function(snapshot) {
 	user1Choice = snapshot.val();
 
@@ -259,6 +266,8 @@ user1ChoiceRef.on('value', function(snapshot) {
 	compareChoice();
 });
 
+
+//need work
 user2ChoiceRef.on('value', function(snapshot) {
 	user2Choice = snapshot.val();
 
@@ -269,6 +278,7 @@ user2ChoiceRef.on('value', function(snapshot) {
 	compareChoice();
 });
 
+//need work
 function compareChoice() {
 
 	if ((user1Choice !== null) && (user2Choice !== null)) {
@@ -328,6 +338,7 @@ function newRound() {
 		showChoice(2);
 	}
 
+	/*clear both old choices*/
 	clearOldChoices();
 }
 
