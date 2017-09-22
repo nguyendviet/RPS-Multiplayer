@@ -56,7 +56,6 @@ function showChoice(id) {
 	$('.paper' + id).html(paperPNG);
 	$('.scissors' + id).html(scissorsPNG);
 	$('.userChoice' + id).show();
-	/*$('.shapeChosen' + id).html('');*/
 }
 
 function clearOldChoices() {
