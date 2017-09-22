@@ -134,13 +134,12 @@ userRef.on('child_removed', function(snapshot) {
 	$('.notification').html('');
 });
 
-/*switch colours of user boxes*/
+
 function toggleBorder(a, b) {
-	$('.user' + a).addClass('redBorder');
-	$('.user' + b).removeClass('redBorder');
+	$('.user' + a).css('border', '3px solid red');
+	$('.user' + b).css('border', '3px solid #cccccc');
 }
 
-/*show message to the right user*/
 function toggleTurnMessage(id) {
 	if (localUser.id === id) {
 		$('.notification').html('It\'s your turn.');
@@ -153,9 +152,10 @@ function toggleTurnMessage(id) {
 turnRef.on('value', function(snapshot) {
 	t = snapshot.val();
 
-	/*display message and colour according to turn*/
+	/*switch colours of user boxes*/
+
 	if (t !== null) {
-		
+
 		if (t === 1) {
 			toggleTurnMessage(1);
 			toggleBorder(1, 2);
@@ -172,6 +172,36 @@ turnRef.on('value', function(snapshot) {
 			$('.shapeChosen2').html('<h1>' + user2Choice + '</h1>');
 		}
 	}
+		
+	/*if (t === 1) {
+		$('.user1').css('border-color', 'red');
+		$('.user2').css('border-color', '#cccccc');
+
+		if (localUser.id === 1) {
+			$('.notification').html('It\'s your turn');
+		}
+		else {
+			$('.notification').html('Waiting for player 1'); //if user 1 quits, and logs back in, show 'it's your turn'
+		}
+	}
+
+	if (t === 2) {
+		$('.user2').css('border-color', 'red');
+		$('.user1').css('border-color', '#cccccc');
+
+		if (localUser.id === 2) {
+			$('.notification').html('It\'s your turn');
+		}
+		else {
+			$('.notification').html('Waiting for player 2');
+		}
+	}*/
+
+	/*if (t === 3) {
+		
+		$('.shapeChosen1').html('<h1>' + user1Choice + '</h1>');
+		$('.shapeChosen2').html('<h1>' + user2Choice + '</h1>');
+	}*/
 });
 
 /*print user 1 info when joined*/
