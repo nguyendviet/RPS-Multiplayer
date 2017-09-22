@@ -30,6 +30,9 @@ var score1 = 0;
 var score2 = 0;
 var turn = 1;
 
+var user1Quit = false;
+var user2Quit = false;
+
 //================================================ FUNCTIONS ================================================
 
 /*prepare game*/
@@ -113,6 +116,17 @@ userRef.on("value", function(snapshot) {
 	currentUser = snapshot.val();
 });
 
+userRef.on('child_added', function(snapshot) {
+	/*reset score if 3rd user joins*/
+	if (existingUsers >= 1) {
+		score1 = 0;
+		score2 = 0;
+
+		user1Ref.update({win: 0, loss: 0});
+		user2Ref.update({win: 0, loss: 0});
+	}
+});
+
 /*remove player's info if disconnected*/
 userRef.on('child_removed', function(snapshot) {
 	chatRef.remove();
@@ -121,10 +135,6 @@ userRef.on('child_removed', function(snapshot) {
 	$('.box').css('border-color', '#cccccc');
 	$('.notification').html('');
 });
-
-//if a user quits:
-//reset existing user's score
-//reset existing user's border colour
 
 turnRef.on('value', function(snapshot) {
 	var t = snapshot.val();
