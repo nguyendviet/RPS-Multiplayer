@@ -30,7 +30,7 @@ var loss;
 var localUser = {id: [], ref: '', choiceRef: '', name: '',  choice: '', win: win, loss: loss};
 var score1 = 0;
 var score2 = 0;
-var turn = 1;
+var turn = 0;
 
 var user1Quit = false;
 var user2Quit = false;
@@ -101,7 +101,7 @@ function createNewUser() {
 userRef.on("value", function(snapshot) {
 	/*start 1st turn when 2 users in*/
 	if (snapshot.numChildren() === 2) {
-		turnRef.set(turn);
+		turnRef.set(1);
 	}
 
 	/*check no of existing users*/
@@ -131,10 +131,10 @@ userRef.on('child_removed', function(snapshot) {
 });
 
 turnRef.on('value', function(snapshot) {
-	t = snapshot.val();
+	turn = snapshot.val();
 
 	/*switch colours of user boxes*/
-	if (t === 1) {
+	if (turn === 1) {
 		$('.user1').css('border-color', 'red');
 		$('.user2').css('border-color', '#cccccc');
 
@@ -146,7 +146,7 @@ turnRef.on('value', function(snapshot) {
 		}
 	}
 
-	if (t === 2) {
+	if (turn === 2) {
 		$('.user2').css('border-color', 'red');
 		$('.user1').css('border-color', '#cccccc');
 
@@ -158,7 +158,7 @@ turnRef.on('value', function(snapshot) {
 		}
 	}
 
-	if (t === 3) {
+	if (turn === 3) {
 		/*show results and choices*/
 		$('.shapeChosen1').html('<h1>' + user1Choice + '</h1>');
 		$('.shapeChosen2').html('<h1>' + user2Choice + '</h1>');
