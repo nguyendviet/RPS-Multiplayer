@@ -55,6 +55,8 @@ function showChoice(id) {
 	$('.rock' + id).html(rockPNG);
 	$('.paper' + id).html(paperPNG);
 	$('.scissors' + id).html(scissorsPNG);
+	$('.userChoice' + id).show();
+	$('.shapeChosen' + id).html('');
 }
 
 function writeUserDatabase(id, name, win, loss) {
@@ -290,8 +292,7 @@ function compareChoice() {
 
 function newRound() {
 	/*remove data on firsebase*/
-	user1ChoiceRef.remove();
-	user2ChoiceRef.remove();
+	localUser.ref.child('choice').remove();
 
 	/*clear choices*/
 	user1Choice = '';
@@ -304,15 +305,11 @@ function newRound() {
 
 	/*show the right user choices again*/
 	if (localUser.id === 1) {
-		$('.userChoice1').show();
+		showChoice(1);
 	}
 	else {
-		$('.userChoice2').show();
+		showChoice(2);
 	}
-
-	/*clear shown chosen shapes*/
-	$('.shapeChosen1').html('');
-	$('.shapeChosen2').html('');
 }
 
 /*send message*/
