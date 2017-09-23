@@ -13,12 +13,18 @@
 		<div class="container">
 			<div class="gameName text-center"><h1>Rock - Paper - Scissors</h1></div>
 			
-			<div class="row justify-content-center userBoard">
-				<div class="col-sm-4">
-					<div class="userInfo"></div>
-					<div class="notification"></div>
+			<div class="text-center userBoard">
+				<div class="row justify-content-center userInfo">
+					<div class="form-inline">
+						<input id="newUser" type="text" class="form-control mr-sm-2" placeholder="Type your name here">
+						<button id="startButton" type="submit" class="btn btn-success">Start</button>
+					</div>
+				</div>
+				<div class="row justify-content-center">
+					<div class="col-md-6 notification"></div>
 				</div>
 			</div>
+			
 
 			<div class="row justify-content-center">
 				
@@ -26,9 +32,9 @@
 					<div class="userName userName1">Waiting for Player 1</div>
 					<div class="userRPS">
 							<div class="userRPS1">
-								<div class="tool tool1 rock1" data-tool="Rock"></div>
-								<div class="tool tool1 paper1" data-tool="Paper"></div>
-								<div class="tool tool1 scissors1" data-tool="Scissors"></div>
+								<div class="tool rock1" data-tool="Rock"></div>
+								<div class="tool paper1" data-tool="Paper"></div>
+								<div class="tool scissors1" data-tool="Scissors"></div>
 							</div>
 						<div class="toolChosen1"></div>
 					</div>
@@ -41,9 +47,9 @@
 					<div class="userName userName2">Waiting for Player 2</div>
 					<div class="userRPS">
 						<div class="userRPS2">
-							<div class="tool tool2 rock2" data-tool="Rock"></div>
-							<div class="tool tool2 paper2" data-tool="Paper"></div>
-							<div class="tool tool2 scissors2" data-tool="Scissors"></div>
+							<div class="tool rock2" data-tool="Rock"></div>
+							<div class="tool paper2" data-tool="Paper"></div>
+							<div class="tool scissors2" data-tool="Scissors"></div>
 						</div>
 						<div class="toolChosen2"></div>
 					</div>

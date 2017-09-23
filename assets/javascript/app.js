@@ -12,13 +12,13 @@ firebase.initializeApp(config);
 //================================================ GLOBAL VARS ================================================
 
 var database = firebase.database();
-var userRef = database.ref("/users");
-var user1Ref = database.ref('users/1/');
-var user1ChoiceRef = database.ref('users/1/choice/');
-var user2Ref = database.ref('users/2/');
-var user2ChoiceRef = database.ref('users/2/choice/');
-var turnRef = database.ref('turn/');
-var chatRef = database.ref("/chat");
+var userRef = database.ref('users');
+var user1Ref = database.ref('users/1');
+var user1ChoiceRef = database.ref('users/1/choice');
+var user2Ref = database.ref('users/2');
+var user2ChoiceRef = database.ref('users/2/choice');
+var turnRef = database.ref('turn');
+var chatRef = database.ref('chat');
 
 var existingUsers, currentUser;
 var user1Choice = ''; 
@@ -31,12 +31,6 @@ var score2 = 0;
 var turn = 1;
 
 //================================================ FUNCTIONS ================================================
-
-/*prepare game*/
-function getReady() {
-	/*print name box and start button*/
-	$('.userInfo').html('<div class="form-inline"><input id="newUser" type="text" class="form-control col-sm-9 mr-sm-2" placeholder="Type your name here"><button id="startButton" type="submit" class="btn btn-success">Start</button></div>');
-}
 
 /*insert photos for RPS*/
 function setRPS() {
@@ -351,6 +345,5 @@ chatRef.on('child_removed', function() {
 //================================================ OPERATIONS ================================================
 
 $('.tool').on('click', chosenTool);
-getReady();
 $('#startButton').on('click', createNewUser);
 $('#sendButton').on('click', sendMessage);
